@@ -364,3 +364,52 @@ def checkPossibility(self, nums):
                 b[i+1] = nums[i]
                 break
         return a== sorted(a) or b == sorted(b)
+
+
+def maxAreaOfIsland(grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        lIsland = []
+        w, h = len(grid[0]), len(grid)
+        for i in range(h):
+            for j in range(w):
+                
+                if grid[i][j] == 1:
+                    for each in lIsland:
+                        if (i, j) in each:
+                            continue
+                    tmp = []
+                    tmp.append((i, j))
+                    findsurround((i, j), tmp, grid)
+                    lIsland.append(tmp)
+        
+        lLen = [len(each) for each in lIsland]
+        m = max(lLen)
+        i = lLen.index(m)
+        return lIsland[i], m
+    
+def findsurround(tXY, result, grid):
+    i, j = tXY
+    w, h = len(grid[0]), len(grid)
+    l = [(i-1, j), (i+1, j), (i, j+1), (i, j-1)]
+    for each in l:
+        if (each[0], each[1]) in result or each[0] < 0 or each[0] >= h or each[1] < 0 or each[1] >= w:
+            continue
+        
+        if grid[each[0]][each[1]] == 1:
+            result.append((each[0], each[1]))
+            findsurround(each, result, grid)
+        
+grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],
+        [0,0,0,0,0,0,0,1,1,1,0,0,0],
+        [0,1,1,0,1,0,0,0,0,0,0,0,0],
+        [0,1,0,0,1,1,0,0,1,0,1,0,0],
+        [0,1,0,0,1,1,0,0,1,1,1,0,0],
+        [0,0,0,0,0,0,0,0,0,0,1,0,0],
+        [0,0,0,0,0,0,0,1,1,1,1,0,0],
+        [0,0,0,0,0,0,0,1,1,0,0,0,0]]
+
+result = maxAreaOfIsland(grid)
+print(result)
