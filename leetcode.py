@@ -1,11 +1,4 @@
 import os
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hellodjango.settings")
-
-import django
-django.setup()
-from main.models import Express
-import django.utils.timezone as timezone
 import random
 import re
 
@@ -240,13 +233,14 @@ def searchInsert(nums, target):
                 l = mid + 1
             else:
                 return mid, l, r
-        return r + 1, l, r
+        return l, l, r
 
 # l = [1, 3, 6, 8, 11, 13, 15]
-# result = searchInsert([1], 0)
+# result = searchInsert(l, 9)
 # print(result)
 
 def generate(numRows):
+    #生成杨辉三角
     """
     :type numRows: int
     :rtype: List[List[int]]
@@ -345,71 +339,101 @@ def findUnsortedSubarray(nums):
     :rtype: int
     """
     is_same = [a == b for a, b in zip(nums, sorted(nums))]
-    return 0 if all(is_same) else len(nums) - is_same.index(False) - is_same[::-1].index(False)
+    if all(is_same):
+        return 0
+    else:
+        return len(nums) - is_same.index(False) - is_same[::-1].index(False)
 
 
 # l = [2, 6, 4, 8, 10, 9, 15]
 # result = findUnsortedSubarray(l)
 # print(result)
 
-def checkPossibility(self, nums):
-        """
-        :type nums: List[int]
-        :rtype: bool
-        """
-        a, b = list(nums), list(nums)
-        for i in range(len(nums)-1):
-            if nums[i] > nums[i+1]:
-                a[i] = nums[i+1]
-                b[i+1] = nums[i]
-                break
-        return a== sorted(a) or b == sorted(b)
+def checkPossibility(nums):
+    #改变一个数 使整体有序
+    """
+    :type nums: List[int]
+    :rtype: bool
+    """
+    a, b = list(nums), list(nums)
+    for i in range(len(nums)-1):
+        if nums[i] > nums[i+1]:
+            a[i] = nums[i+1]
+            b[i+1] = nums[i]
+            break
+    return a == sorted(a) or b == sorted(b)
 
 
 def maxAreaOfIsland(grid):
-        """
-        :type grid: List[List[int]]
-        :rtype: int
-        """
-        lIsland = []
-        w, h = len(grid[0]), len(grid)
-        for i in range(h):
-            for j in range(w):
-                
-                if grid[i][j] == 1:
-                    for each in lIsland:
-                        if (i, j) in each:
-                            continue
-                    tmp = []
-                    tmp.append((i, j))
-                    findsurround((i, j), tmp, grid)
-                    lIsland.append(tmp)
+    #围棋一片同气的棋子数 最大值
+    """
+    :type grid: List[List[int]]
+    :rtype: int
+    """    
+    grid = {i + j*1j: val for i, row in enumerate(grid) for j, val in enumerate(row)}
+    def area(z):
+        return grid.pop(z, 0) and 1 + sum(area(z + 1j**k) for k in range(4))
+    return max(map(area, set(grid)))
         
-        lLen = [len(each) for each in lIsland]
-        m = max(lLen)
-        i = lLen.index(m)
-        return lIsland[i], m
-    
-def findsurround(tXY, result, grid):
-    i, j = tXY
-    w, h = len(grid[0]), len(grid)
-    l = [(i-1, j), (i+1, j), (i, j+1), (i, j-1)]
-    for each in l:
-        if (each[0], each[1]) in result or each[0] < 0 or each[0] >= h or each[1] < 0 or each[1] >= w:
-            continue
-        
-        if grid[each[0]][each[1]] == 1:
-            result.append((each[0], each[1]))
-            findsurround(each, result, grid)
-        
-grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],
-        [0,0,0,0,0,0,0,1,1,1,0,0,0],
-        [0,1,1,0,1,0,0,0,0,0,0,0,0],
-        [0,1,0,0,1,1,0,0,1,0,1,0,0],
-        [0,1,0,0,1,1,0,0,1,1,1,0,0],
-        [0,0,0,0,0,0,0,0,0,0,1,0,0],
-        [0,0,0,0,0,0,0,1,1,1,1,0,0],
-        [0,0,0,0,0,0,0,1,1,0,0,0,0]]
 
-result = maxAreaOfIsland(grid)
-print(result)
+# result = maxAreaOfIsland(grid)
+# print(result)
+
+
+def findPoisonedDuration(timeSeries, duration):
+    """
+    :type timeSeries: List[int]
+    :type duration: int
+    :rtype: int
+    """
+    lasttime = duration if timeSeries else 0
+    for i in range(len(timeSeries)-1):
+        diff = timeSeries[i+1] - timeSeries[i]
+        lasttime += min(diff, duration)
+    
+    return lasttime
+
+# l = [1,2, 4, 8]
+# result = findPoisonedDuration(l, 4)
+# print(result)
+
+def constructArray(n, k):
+    #使n个数的数组的相邻差只有k种值
+    """
+    :type n: int
+    :type k: int
+    :rtype: List[int]
+    """
+    res = []
+    l, r = 1, k+1
+    while l <= r:
+        res.append(l)
+        l+=1
+        if l <= r :
+            res.append(r)
+            r-=1
+    
+    res.extend(range(k+2, n+1))
+    return res
+
+# print(constructArray(20,10))
+
+
+def topKFrequent(words, k):
+    """
+    :type words: List[str]
+    :type k: int
+    :rtype: List[str]
+    """
+    from functools import cmp_to_key
+    l = []
+    for each in words:
+        tmp = [each, words.count(each)]
+        if tmp not in l:
+            l.append(tmp)    
+    
+    l.sort(key=lambda x:x[0])
+    l.sort(key=lambda x:x[1], reverse=True)
+    return [m[0] for m in l[:k]]
+
+print(topKFrequent(["aa","aaa","a"], 1))
