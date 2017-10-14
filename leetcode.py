@@ -2,7 +2,7 @@ import os
 import random
 import re
 
-
+import collections
 
 b = list(range(1, 101))
 counter = 0
@@ -516,4 +516,28 @@ def updateMatrix(matrix):
 l= [[0,1,1,1],
     [1,1,1,1],
     [1,1,1,0]]
-print(updateMatrix(l))
+# print(updateMatrix(l))
+
+def minWindow(s, t):
+    need, missing = collections.Counter(t), len(t)
+    l = missing
+    i = I = J = 0
+    for j, c in enumerate(s, 1):
+        missing -= need[c] > 0
+        need[c] -= 1
+        print(j,c,missing,need)
+        if not missing:
+            print(i,j,s[i],need[s[i]])
+            while i < j and need[s[i]] < 0:
+                print(s[i])
+                need[s[i]] += 1
+                i += 1
+            if not J or j - i <= J - I:
+                I, J = i, j
+                if J-I == l:
+                    break
+            print(I,J,s[i],need,".....")
+    return s[I:J]
+
+
+print(minWindow("CBADADOBECODEBANC", "ABC"))
