@@ -425,15 +425,95 @@ def topKFrequent(words, k):
     :type k: int
     :rtype: List[str]
     """
-    from functools import cmp_to_key
+    import collections as clt
+    oCount = clt.Counter(words)
     l = []
-    for each in words:
-        tmp = [each, words.count(each)]
-        if tmp not in l:
-            l.append(tmp)    
+    for key, val in oCount.items():
+        l.append([key, val])    
+
+    # l = []
+    # for each in words:
+    #     tmp = [each, words.count(each)]
+    #     if tmp not in l:
+    #         l.append(tmp)    
     
     l.sort(key=lambda x:x[0])
     l.sort(key=lambda x:x[1], reverse=True)
     return [m[0] for m in l[:k]]
 
-print(topKFrequent(["aa","aaa","a"], 1))
+# print(topKFrequent(["aa","aaa","a"], 1))
+
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+
+
+def reverseList(head):
+    #翻转链表
+    """
+    :type head: ListNode
+    :rtype: ListNode
+    """
+    prev = None
+    while head:
+        cur = head
+        head = head.next
+        cur.next = prev
+        prev = cur
+    return prev
+
+
+
+def updateMatrix(matrix):
+    """
+    :type matrix: List[List[int]]
+    :rtype: List[List[int]]
+    """
+    # w, h = len(matrix[0]), len(matrix)
+    # inf = float('inf')
+    # def bfs(i, j):
+    #     if not (0 <= i < h and 0 <= j < w):
+    #         return inf
+    #     if not matrix[i][j]:
+    #         return 0
+    #     l = [(i+1,j), (i-1,j), (i,j+1), (i,j-1)]
+    #     cross = []
+    #     cnt = 1
+    #     for m, n in l:
+    #         if not (0 <= m < h and 0 <= n < w):
+    #             continue
+    #         if not matrix[m][n]:
+    #             return 1
+        
+    #     cnt += min(bfs(*l[0]), bfs(*l[1]), bfs(*l[2]), bfs(*l[3]))
+    #     return cnt
+
+    # res = []
+    # for i in range(h):
+    #     res.append([])
+    #     for j in range(w):
+    #         res[-1].append(bfs(i, j))
+    
+    # return res
+    w, h = len(matrix[0]), len(matrix)
+    m = w+h-2 #可能的最大距离
+    for _ in range(m):
+        for i in range(h):
+            for j in range(w):
+                l = [(i+1,j), (i-1,j), (i,j+1), (i,j-1)]
+                tmp = []
+                for m, n in l:
+                    if 0 <= m < h and 0 <= n < w:
+                        tmp.append(matrix[m][n])
+                if matrix[i][j]: #0永远为0
+                    matrix[i][j] = min(tmp)+1
+    return matrix
+
+
+l= [[0,1,1,1],
+    [1,1,1,1],
+    [1,1,1,0]]
+print(updateMatrix(l))
