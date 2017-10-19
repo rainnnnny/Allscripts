@@ -1,53 +1,9 @@
 import os
 import random
 import re
+import math
 
 import collections
-
-b = list(range(1, 101))
-counter = 0
-c = []
-curMax = b[-1]
-while len(b) > 1:
-    d = 0
-    while d < 7:
-        counter += 1
-        if counter > curMax:
-            counter = counter - curMax
-        if counter not in c:
-            d += 1
-
-    c.append(counter)
-    b.remove(counter)
-    curMax = max(b)
-
-# print(c, b)
-# for i in range(1, 101):
-#     if i not in c:
-#         print(i)
-
-
-def QuickSort(lList, start, end):
-    if start >= end:
-        return
-    flag = lList[end]
-    i, j = start, end - 1
-    while i <= j:
-        if lList[i] > flag:
-            lList[j], lList[i] = lList[i], lList[j]
-            j -= 1
-        else:
-            i += 1
-    lList[j+1], lList[end] = lList[end], lList[j+1]
-    print(lList, flag)
-    QuickSort(lList, start, j)
-    QuickSort(lList, j+2, end)
-
-# a = list(range(70))
-# random.shuffle(a)
-# print(a)
-# QuickSort(a, 0, len(a)-1)
-# print(a)
 
 
 def findDisappearedNumbers(nums):
@@ -342,7 +298,7 @@ def findUnsortedSubarray(nums):
     if all(is_same):
         return 0
     else:
-        return len(nums) - is_same.index(False) - is_same[::-1].index(False)
+        return is_same.rindex(False) - is_same.index(False)
 
 
 # l = [2, 6, 4, 8, 10, 9, 15]
@@ -381,6 +337,7 @@ def maxAreaOfIsland(grid):
 
 
 def findPoisonedDuration(timeSeries, duration):
+    #提莫攻击
     """
     :type timeSeries: List[int]
     :type duration: int
@@ -452,7 +409,7 @@ def topKFrequent(words, k):
 
 
 def reverseList(head):
-    #翻转链表
+    #翻转单向链表
     """
     :type head: ListNode
     :rtype: ListNode
@@ -468,76 +425,154 @@ def reverseList(head):
 
 
 def updateMatrix(matrix):
+    #矩阵每个值与0的距离
     """
     :type matrix: List[List[int]]
     :rtype: List[List[int]]
     """
-    # w, h = len(matrix[0]), len(matrix)
-    # inf = float('inf')
-    # def bfs(i, j):
-    #     if not (0 <= i < h and 0 <= j < w):
-    #         return inf
-    #     if not matrix[i][j]:
-    #         return 0
-    #     l = [(i+1,j), (i-1,j), (i,j+1), (i,j-1)]
-    #     cross = []
-    #     cnt = 1
-    #     for m, n in l:
-    #         if not (0 <= m < h and 0 <= n < w):
-    #             continue
-    #         if not matrix[m][n]:
-    #             return 1
-        
-    #     cnt += min(bfs(*l[0]), bfs(*l[1]), bfs(*l[2]), bfs(*l[3]))
-    #     return cnt
-
-    # res = []
-    # for i in range(h):
-    #     res.append([])
-    #     for j in range(w):
-    #         res[-1].append(bfs(i, j))
-    
-    # return res
     w, h = len(matrix[0]), len(matrix)
-    m = w+h-2 #可能的最大距离
-    for _ in range(m):
-        for i in range(h):
-            for j in range(w):
-                l = [(i+1,j), (i-1,j), (i,j+1), (i,j-1)]
-                tmp = []
-                for m, n in l:
-                    if 0 <= m < h and 0 <= n < w:
-                        tmp.append(matrix[m][n])
-                if matrix[i][j]: #0永远为0
-                    matrix[i][j] = min(tmp)+1
+    inf = float('inf')
+    lZero = []
+    for i in range(h):
+        for j in range(w):
+            if matrix[i][j]:
+                matrix[i][j] = inf
+            else:
+                lZero.append((i, j))
+    
+    for i, j in lZero:
+        tmp = matrix[i][j] + 1
+        for r, c in [(i+1,j), (i-1,j), (i,j+1), (i,j-1)]:
+            if 0 <= r < h and 0 <= c < w and matrix[r][c] > tmp:
+                matrix[r][c] = tmp
+                lZero.append((r,c))
+    
     return matrix
 
 
-l= [[0,1,1,1],
-    [1,1,1,1],
-    [1,1,1,0]]
+
+l= [[0,1,1,1,1],
+    [1,1,1,1,0],
+    [1,1,1,1,1]]
 # print(updateMatrix(l))
 
 def minWindow(s, t):
+    #包含指定字符的最小子串
+
     need, missing = collections.Counter(t), len(t)
     l = missing
     i = I = J = 0
     for j, c in enumerate(s, 1):
         missing -= need[c] > 0
         need[c] -= 1
-        print(j,c,missing,need)
         if not missing:
-            print(i,j,s[i],need[s[i]])
             while i < j and need[s[i]] < 0:
-                print(s[i])
                 need[s[i]] += 1
                 i += 1
             if not J or j - i <= J - I:
                 I, J = i, j
-                if J-I == l:
-                    break
-            print(I,J,s[i],need,".....")
+                # if J-I == l:
+                #     break
     return s[I:J]
 
 
-print(minWindow("CBADADOBECODEBANC", "ABC"))
+# print(minWindow("CBADADOBECODEBANC", "ABC"))
+
+
+def detectCycle(head):
+    #检测链表是否有环并找出起点
+    """
+    :type head: ListNode
+    :rtype: ListNode
+    """
+    p1 = p2 = head
+    try:
+        p1 = p1.next
+        p2 = p2.next.next
+        while p1 != p2:
+            p1 = p1.next
+            p2 = p2.next.next
+    except:
+        return None
+    meet = p1
+        
+    while head != meet:
+        head = head.next
+        meet = meet.next
+        
+    return head
+
+def checkPerfectNumber(num):
+    """
+    :type num: int
+    :rtype: bool
+    """
+    import math
+    s = 1
+    isqrt = int(math.sqrt(num))
+    for i in range(2, isqrt+1):
+        if num % i == 0:
+            print(i, num // i)
+            s += i
+            if num / i != i:
+                s += num // i
+                
+    return s == num
+
+# print(checkPerfectNumber(200))
+
+def makeresult(l):
+    tmp = []
+    for i in range(n):
+        tmp.append(["."]*n)
+    for i, j in enumerate(l):
+        tmp[i][j] = "Q"
+    for i, each in enumerate(tmp):
+        tmp[i] = "".join(each)
+    return tmp
+        
+def backtracking(l, i):
+    if i == n:
+        lAll.append(makeresult(l))
+        return
+    for j in range(n):
+        l[i], bValid = j, True
+        for r in range(i):
+            if l[r] == j or abs(l[r]-j) == i - r:
+                bValid = False
+                break
+        if bValid:
+            backtracking(l,i+1)
+
+# n=4            
+# lAll = []                
+# l = [0]*n
+# backtracking(l,0)
+
+# print(lAll, len(lAll))
+
+
+
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+
+def rob(root):
+    """
+    :type root: TreeNode
+    :rtype: int
+    """
+    
+    def robdfs(root):
+        if not root:
+            return [0, 0]
+        l = robdfs(root.left)
+        r = robdfs(root.right)
+        
+        return [max(l[0],l[1])+max(r[0],r[1]), root.val+l[0]+r[0]]
+    
+    return max(robdfs(root))

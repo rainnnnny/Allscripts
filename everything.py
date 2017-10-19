@@ -3,25 +3,11 @@ import os
 import random
 import re
 import time
-
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hellodjango.settings")
-# import django
-# django.setup()
-
-# '''
-# Django 版本大于等于1.7的时候，需要加上下面两句
-# import django
-# django.setup()
-# 否则会抛出错误 django.core.exceptions.AppRegistryNotReady: Models aren't loaded yet.
-# '''
-
-# from main.models import Express
-# import django.utils.timezone as timezone
+import math
 
 
-# oAll = Express.objects.all()
 
-
+#装饰器
 def deco(func):
     def wrapper(a, b):
         st = time.time()
@@ -33,10 +19,11 @@ def deco(func):
 @deco
 def add(a, b):
     print(a+b)
+# add(1, 2)
 
-add(1, 2)
 
 
+#闭包
 s = "string in global"
 num = 99
 
@@ -53,10 +40,11 @@ def numFunc(a, b):
 
     return addFunc(a, b)
 
-print(numFunc(3, 6))
+# print(numFunc(3, 6))
 
 
 
+#单例
 def singleton(cls, *args):
     instances = {}
     def getinstance():
@@ -65,5 +53,66 @@ def singleton(cls, *args):
         return instances[cls]
     return getinstance
 
-@singleton
-class Myclass():
+
+
+#range里用len是否影响效率
+def tmp1():
+    a = list(range(20000000))
+    m=0
+    t1 = time.time()
+    for i in range(len(a)):
+        m=1
+    print(time.time()-t1)
+
+    t2 = time.time()
+    for i in range(20000000):
+        m=1
+    print(time.time()-t2)
+
+
+
+#n人轮流报数，数到k出局，最后剩的一个
+def tmp2():
+    n, k = 100, 7
+    ori = list(range(1, n+1))
+    counter = 0
+    out = []
+    curMax = ori[-1]
+    while len(ori) > 1:
+        oneloop = 0
+        while oneloop < k:
+            counter += 1
+            if counter > curMax:
+                counter -= curMax
+            if counter not in out:
+                oneloop += 1
+
+        out.append(counter)
+        ori.remove(counter)
+        curMax = ori[-1]
+    return ori, out
+
+
+
+#快排
+def QuickSort(lList, start, end):
+    if start >= end:
+        return
+    flag = lList[end]
+    i, j = start, end - 1
+    while i <= j:
+        if lList[i] > flag:
+            lList[j], lList[i] = lList[i], lList[j]
+            j -= 1
+        else:
+            i += 1
+    lList[j+1], lList[end] = lList[end], lList[j+1]
+    print(lList, flag)
+    QuickSort(lList, start, j)
+    QuickSort(lList, j+2, end)
+
+# a = list(range(70))
+# random.shuffle(a)
+# print(a)
+# QuickSort(a, 0, len(a)-1)
+# print(a)
