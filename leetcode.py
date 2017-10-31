@@ -814,4 +814,46 @@ def lengthOfLongestSubstring(s):
     
     return s[I:J], J-I
 
-print(lengthOfLongestSubstring("zxcvawefeasdfzv"))
+# print(lengthOfLongestSubstring("zxcvawefeasdfzv"))
+
+def RegExMatch(s, p):
+    """
+    :type s: str
+    :type p: str
+    :rtype: bool
+    """
+    i=j=0
+    while i < len(s) and j < len(p):
+        keepj=False
+        print(i,j,s[i],p[j])
+            
+        if p[j] == s[i] or p[j] == ".":
+            try:
+                if p[j+1] == "*":
+                    keepj=True
+            except:
+                pass
+            i+=1;j+=int(not keepj)
+            continue
+        else:
+            try:
+                if p[j+1] == "*":
+                    j+=2
+                    continue
+            except:
+                pass
+            return False
+    
+    try:
+        if p[j+1] == "*":
+            j+=2
+            length = len(p) - j
+            bTail = RegExMatch(s[len(s)-length:len(s)] , p[j:len(p)])
+            j += bTail*length
+    except:
+        pass
+
+    print(i,j)
+    return i == len(s) and j == len(p)
+
+print(RegExMatch("asadsad", "a*s*adsads*s*"))
