@@ -451,9 +451,9 @@ def updateMatrix(matrix):
 
 
 
-l= [[0,1,1,1,1],
-    [1,1,1,1,0],
-    [1,1,1,1,1]]
+# l= [[0,1,1,1,1],
+#     [1,1,1,1,0],
+#     [1,1,1,1,1]]
 # print(updateMatrix(l))
 
 def minWindow(s, t):
@@ -554,11 +554,23 @@ def backtracking(l, i):
 
 
 # Definition for a binary tree node.
-# class TreeNode(object):
-#     def __init__(self, x):
-#         self.val = x
-#         self.left = None
-#         self.right = None
+class TreeNode(object):
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+
+    def __str__(self):
+        res = str(self.val)
+        if self.left:
+            res += ' ' + str(self.left.val)
+        else:
+            res += ' None'
+        if self.right:
+            res += ' ' + str(self.right.val)
+        else:
+            res += ' None'
+        return res
 
 
 def rob(root):
@@ -573,6 +585,136 @@ def rob(root):
         l = robdfs(root.left)
         r = robdfs(root.right)
         
-        return [max(l[0],l[1])+max(r[0],r[1]), root.val+l[0]+r[0]]
+        return [max(l[0],l[1]) + max(r[0],r[1]), root.val + l[0] + r[0]]
     
     return max(robdfs(root))
+
+
+l = [3,4,5,1,2,3,None,8,8,9,9]
+l2 = [4,1,2,8,8,9,9]
+# print(n)
+def generateBinaryTree(l):
+    n = 0
+    while 2**n -1 < len(l):
+        n+=1
+    lNode = [TreeNode(l[0])]
+    for i in range(1, n):
+        for j in range(2**i):
+            index = 2**i-1+j
+            try:
+                val = l[index]
+            except IndexError:
+                break
+            # print(i, index, val)
+            if val == None:
+                lNode.append(None)
+                continue
+            oNode = TreeNode(val)
+            parent = lNode[(index-1)//2]
+            if index % 2:
+                parent.left = oNode
+            else:
+                parent.right = oNode
+            lNode.append(oNode)
+    return lNode
+
+tree1 = generateBinaryTree(l)
+tree2 = generateBinaryTree(l2)
+# for each in tree1:
+#     print(each)
+
+
+def isSubtree(s, t):
+    """
+    :type s: TreeNode
+    :type t: TreeNode
+    :rtype: bool
+    """
+    def getdepth(node, tdepth=None):
+        ileft = getdepth(node.left, tdepth) if node.left else 0
+        iright = getdepth(node.right, tdepth) if node.right else 0
+        depth = 1 + max(ileft, iright)
+        if tdepth!=None and depth == tdepth:
+            l.append(isSub(node, t))
+        return depth
+    
+    def isSub(s, t):
+        if not s or not t:
+            return not s and not t
+
+        return s.val == t.val and isSub(s.left, t.left) and isSub(s.right, t.right)
+    
+    tdepth = getdepth(t)
+    l = []
+    getdepth(s, tdepth)
+    return any(l)
+
+# print(isSubtree(tree1[0], tree2[0]))
+
+
+
+def singleNumber1(nums):
+    dic = {}
+    for num in nums:
+        if dic.get(num, 0):
+            dic.pop(num)
+        else:
+            dic[num] = 1
+    return list(dic)[0]
+
+# print(singleNumber1([1,2,3,3,2,1,4,5,6,6,5]))
+
+
+def findKthNumber(m, n, k):
+        """
+        :type m: int
+        :type n: int
+        :type k: int
+        :rtype: int
+        """
+        def enough(x):
+            return sum(min(x // i, n) for i in range(1, m+1)) == k
+
+        lo, hi = 1, m*n
+        while lo < hi:
+            mi = (lo + hi) // 2
+            if not enough(mi):
+                lo = mi + 1
+            else:
+                hi = mi
+        return lo
+        
+# print(findKthNumber(9895,28405,100787757))
+
+
+def isPerfectSquare(num):
+    for i in range(1,num):
+        # print(i, num/i, float(i))
+        if num / i == float(i):
+            return True
+        if num / i < i:
+            return False
+
+# print(isPerfectSquare(2147483647))
+
+
+def islandPerimeter(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        m, n = len(grid), len(grid[0])
+
+        def dfs(i, j):
+            if 0 <= i < m and 0 <= j < n and grid[i][j]:
+                grid[i][j] = 0
+                p1,p2,p3,p4 = dfs(i - 1, j) , dfs(i, j + 1) , dfs(i + 1, j) , dfs(i, j - 1)
+                return [1 + p1[0] + p2[0] + p3[0] + p4[0], p1[1]+p2[1]+p3[1]+p4[1]+int(bool(p1[0]))+int(bool(p2[0]))+int(bool(p3[0]))+int(bool(p4[0]))]
+            return [0,0]
+
+        result = [0,0]
+        for x in range(m):
+            for y in range(n):
+                if grid[x][y]:
+                    result = max(result, dfs(x, y))
+        return result[0]*4 - result[1]*2
