@@ -1,7 +1,10 @@
 #-*- coding:utf-8 -*-
 
 ''' 
-Python2: str -> decode -> unicode -> encode -> str, Python3: bytes -> decode -> str(unicode) -> encode -> bytes
+Python2: str -> decode -> unicode -> encode -> str
+Python3: bytes -> decode -> str(unicode) -> encode -> bytes
+unicode是py内部编码
+py3去掉了unicode()函数
 '''
 
 PY2 = False
@@ -17,7 +20,7 @@ fpath = 'abc'
 PATH = r'D:\work\doc\10. 测试相关\2.指导文档'
 
 if PY2:
-    # Py2如果不设为unicode类型，listdir接收到str报错，因为Python内部使用unicode，这个接口需要的参数类型也必然为unicode
+    # Py2如果不设为unicode类型，listdir接收到str报错，因为Python内部使用unicode，listdir需要的参数类型也必然为unicode
     PATH = unicode(PATH)
 
 
@@ -36,7 +39,7 @@ def getf(path):
 res = getf(PATH)
 
 if PY2:
-    # Python2, str本身即拥有编码，所以可以直接写
+    # Python2, str本身即拥有编码(被上面代码设置为默认utf-8)，所以可以直接写
     with open(fpath, 'w+') as f:
         for each in res:
             f.write("%s\n" % each)
@@ -46,3 +49,4 @@ else:
         for each in res:
             f.write(("%s\n" % each).encode('utf8'))
 
+        # f.write(str(res).encode('utf-8'))
