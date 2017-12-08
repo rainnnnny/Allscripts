@@ -17,7 +17,7 @@ if PY2:
     sys.setdefaultencoding('utf8')   
 
 fpath = 'abc'
-PATH = r'D:\work\doc\10. 测试相关\2.指导文档'
+PATH = r'./'    # raw, 表示不进行转义, 加上这个防止反斜杠或者中文之类导致报错
 
 if PY2:
     # Py2如果不设为unicode类型，listdir接收到str报错，因为Python内部使用unicode，listdir需要的参数类型也必然为unicode
