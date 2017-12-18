@@ -1,2 +1,2 @@
 # Allscripts
-python scripts
+python3 scripts, some daily use
