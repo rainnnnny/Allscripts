@@ -1,4 +1,4 @@
-#coding:utf-8
+#自己造轮子玩
 
 import threading #for: class Timer,
 
@@ -12,6 +12,12 @@ class timer(threading.Timer):
 		self.kwargs = None
 
 class Timer():
+	'''
+	usage: 
+	obj = Timer(1, func, 100)
+	if xxx:
+		obj.Stop()
+	'''
 
 	def __init__(self, interval, function, repeats=0, args=None, kwargs=None):
 		self.interval = interval
