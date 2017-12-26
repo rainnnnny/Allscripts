@@ -971,4 +971,4 @@ def RegExMatch(s, p):
     print(i,j)
     return i == len(s) and j == len(p)
 
-print(RegExMatch("asadsad", "a*s*adsads*s*"))
+# print(RegExMatch("asadsad", "a*s*adsads*s*"))
