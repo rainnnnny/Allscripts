@@ -1,33 +1,31 @@
 
 # default args
 port = 25 # SMTP protocol default
-# from_addr = input('email account: ')
-# smtp_server = 'smtp.%s' % from_addr.split('@')[1]
+from_addr = input('email account: ')
 
 ### qq
 # from_addr = '413414606@qq.com'
-# smtp_server = 'smtp.qq.com'
 # port = 587
 ###
 
 ### sina
-from_addr = 'rainnnnny@sina.com'
-smtp_server = 'smtp.sina.com'
+# from_addr = 'rainnnnny@sina.com'
 ###
 
-to_addr = 'rainnnnny@sina.com'
+smtp_server = 'smtp.%s' % from_addr.split('@')[1]
+to_addr = from_addr  # 'rainnnnny@sina.com'
 sMsg = 'you got it.'
 
 import email
 import smtplib
 
 
-def send(msg=''):
-    password = input('password: ') if not msg else input(msg)
+def send(prompt=''):
+    password = input('password for %s: ' % from_addr) if not prompt else input(prompt)
 
     msg = email.message_from_string(sMsg)
     msg['From'] = 'nobody <%s>' % from_addr
-    msg['To'] = 'hello <%s>' % to_addr
+    msg['To'] = 'no one <%s>' % to_addr
     msg['Subject'] = 'Greetings from the Big Brother'
 
     server = smtplib.SMTP(smtp_server, port)
