@@ -40,7 +40,7 @@ def check_who():
         try:
             city = result.get('City').lower()
         except:
-            log.warn('Get city info failed')
+            log.warn('Get city info failed!')
             os._exit(0)
 
         invader, myself = [], []
