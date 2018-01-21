@@ -60,7 +60,7 @@ def main():
     invader, myself = check_who()
     if invader:
         log.warn('Invader found:\n %s \n will send mail' % pformat(invader))
-        # mymail.send(password=mymail.password, msg=pformat(invader), subject="Warning, Invader Found.")
+        mymail.send(password=mymail.password, msg=pformat(invader), subject="Warning, Invader Found.")
     if myself:
         log.info('Youself found:\n %s' % pformat(myself))
     if not invader and not myself:
