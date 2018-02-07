@@ -61,16 +61,16 @@ res = getf(PATH)
 
 
 if PY2:
-    # Python2, 由于py2中概念的模糊, 可以直接用'w+'打开去写, 不过不编成utf8的话也是会抛UnicodeDecodeError的。
+    # Python2, 由于py2中概念的模糊, 可以直接用'w'打开去写, 不过不编成utf8的话也是会抛UnicodeDecodeError的。
     # 检查 "%s\n" % each 的类型可以看到是unicode，说明py2内部处理过程中也一直是unicode（废话）
-    with open(WRITE_PATH, 'w+') as f:
+    with open(WRITE_PATH, 'w') as f:
         for each in res:
             f.write(("%s\n" % each).encode('utf8'))
 
 else:
     # Python3, 可以用w+打开然后不编码直接写str(unicode)，不过那样结果很明显：非英文各种乱码。
-    # 而编了码就转为了bytes类型，所以Python3想正确实现就必须用二进制方式打开 （wb+）
+    # 而编了码就转为了bytes类型，所以Python3想正确实现就必须用二进制方式打开 （wb）
     # 如果打开方式和写入类型不对应，直接就抛TypeError了
-    with open(WRITE_PATH, 'wb+') as f:
+    with open(WRITE_PATH, 'wb') as f:
         for each in res:
             f.write(("%s\n" % each).encode('utf8'))
