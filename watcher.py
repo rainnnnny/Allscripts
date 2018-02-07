@@ -21,10 +21,15 @@ def getlabal(s):
 
 
 def check_who():
-    wholist = os.popen('who')
+    wholist = os.popen('who').readlines()
+    if not wholist:
+        return [], []
     for who in wholist:
         # null     pts/2        2018-01-21 03:43 (14.16.225.186)
-        ip = who[who.index('(')+1:who.index(')')]
+        try:
+            ip = who[who.index('(')+1:who.index(')')]
+        except ValueError:
+            return [], 'only tty found: {}'.format(wholist)
         url = 'https://db-ip.com/%s' % ip
 
         data = urllib.request.urlopen(url).read()
@@ -35,7 +40,10 @@ def check_who():
 
         result = {}
         for i, each in enumerate(th):
-            result[each.get_text().strip()] = td[i].get_text().strip()
+            item = each.get_text().strip()
+            if item in ['ASN', 'City', 'Country']:
+                result[item] = td[i].get_text().strip()
+        result['ip'] = ip
 
         try:
             city = result.get('City').lower()
@@ -62,7 +70,7 @@ def main():
         log.warn('Invader found:\n %s \n will send mail' % pformat(invader))
         mymail.send(password=mymail.password, msg=pformat(invader), subject="Warning, Invader Found.")
     if myself:
-        log.info('Youself found:\n %s' % pformat(myself))
+        log.info('Youself found: %s ' % str(myself))
     if not invader and not myself:
         log.info('Fine, a lonely planet.')
 
