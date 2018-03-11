@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import random
 import log
 import time
@@ -30,4 +31,4 @@ log.info("that's it, %s, %s, %.3f" % (res, trytimes, time.time() - t1))
 
 after = get()
 print("that's it", trytimes, time.time() - t1)
-log.info("after: " % after)
+log.info("after: %s" % after)
