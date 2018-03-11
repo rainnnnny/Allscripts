@@ -1,5 +1,7 @@
 import random
 import log
+import time
+
 
 log = log.getlogger('luck')
 
@@ -16,6 +18,7 @@ def get():
     res.append(random.choice(blue))
     return res
 
+t1 = time.time()
 trytimes = 0
 res = get()
 while res != [[8,13,17,22,26,30], 10]:
@@ -23,7 +26,7 @@ while res != [[8,13,17,22,26,30], 10]:
     trytimes += 1
     if trytimes % 1000 == 0:
         print(trytimes)
-log.info("that's it, %s, %s" % (res, trytimes))
+log.info("that's it, %s, %s, %s" % (res, trytimes, time.time-t1))
 
 after = get()
 print("that's it", trytimes)
