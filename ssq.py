@@ -23,8 +23,8 @@ while res != [[8,13,17,22,26,30], 10]:
     trytimes += 1
     if trytimes % 1000 == 0:
         print(trytimes)
-        log.info("that's it, [8,13,17,22,26,30]", trytimes)
+log.info("that's it, %s, %s" % (res, trytimes))
 
 after = get()
-print(after, trytimes)
-log.info(after)
+print("that's it", trytimes)
+log.info("after: " % after)
