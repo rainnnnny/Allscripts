@@ -2,11 +2,12 @@ import urllib.request
 import time
 import json
 import os
+from pprint import pformat, pprint
+import gevent.subprocess
 
-from pprint import pformat
+import requests
 from bs4 import BeautifulSoup as bs
 
-import mymail
 import log
 
 log = log.getlogger('watcher')
@@ -21,58 +22,59 @@ def getlabal(s):
 
 
 def check_who():
-    wholist = os.popen('who').readlines()
+    wholist = os.popen("who | awk '{print $5}'").readlines()
+    result = []
     if not wholist:
-        return [], []
+        return []
     for who in wholist:
-        # null     pts/2        2018-01-21 03:43 (14.16.225.186)
+        # who = '(14.16.225.186)\n'
         try:
-            ip = who[who.index('(')+1:who.index(')')]
+            ip = who.strip()[1:-1]
         except ValueError:
-            return [], 'only tty found: {}'.format(wholist)
-        url = 'https://db-ip.com/%s' % ip
+            return ['only tty found: {}'.format(wholist)]
+        
+        result.append(crawl_ip_info(ip))
 
-        data = urllib.request.urlopen(url).read()
-        s=bs(data, 'lxml')
+    return result
 
-        th = s('th')
-        td = s('td')
 
-        result = {}
-        for i, each in enumerate(th):
-            item = each.get_text().strip()
-            if item in ['ASN', 'City', 'Country']:
-                result[item] = td[i].get_text().strip()
-        result['ip'] = ip
+def crawl_ip_info(ip):
+ 
+    url = 'http://api.db-ip.com/v2/free/%s' % ip
 
-        try:
-            city = result.get('City').lower()
-        except:
-            log.warn('Get city info failed!')
-            os._exit(0)
+    data = requests.get(url).json()
 
-        invader, myself = [], []
-        myplace = False
-        for each in MYPLACE:
-            if each in city:
-                myplace = True
-                break
-        if myplace:
-            myself.append(result)
-        else:
-            invader.append(result)
-
-        return invader, myself
+    return data
 
 def main():
-    invader, myself = check_who()
+    result = check_who()
+    pprint(result)
+    invader, myself, unknown = [], [], []
+
+    for data in result:        
+        try:
+            city = data.get('city').lower()
+        except:
+            log.warn('Get city info failed! (%s)' % data)
+            unknown.append(data)
+            continue
+        
+        myplace = False
+        for each in MYPLACE:
+             if each == city:
+                 myplace = True
+                 break
+        if myplace:
+            myself.append([each, data.get('ipAddress')]) # only need show city if is myself
+        else:
+            invader.append(data)
+
     if invader:
-        log.warn('Invader found:\n %s \n will send mail' % pformat(invader))
-        mymail.send(password=mymail.password, msg=pformat(invader), subject="Warning, Invader Found.")
+        log.warn('Invader found: %s' % pformat(invader))
     if myself:
-        log.info('Youself found: %s ' % str(myself))
-    if not invader and not myself:
-        log.info('Fine, a lonely planet.')
+        log.info('Youself found: %s' % pformat(myself))
+    if unknown:
+        log.info('unknown: %s' % pformat(unknown))
 
 if __name__ == '__main__':
     main()
