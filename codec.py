@@ -17,11 +17,16 @@ The type used to hold text is str, the type used to hold data is bytes'
 
 import sys
 import os
+import chardet
 
 try:
     PATH = sys.argv[1]
 except IndexError:
     PATH = r'./'  # raw string, 表示不进行转义, 如果复制一个带反斜杠后面带数字或字母的路径, 不加上这个r就报错了
+
+print(PATH, chardet.detect(PATH))
+
+sys.exit(0)
 
 try:
     WRITE_PATH = sys.argv[2]
